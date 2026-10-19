@@ -174,3 +174,77 @@ function escapeText(text){
 
 </body>
 </html>
+
+<style>
+.extra-tools {
+  background: #191927;
+  border: 1px solid #43435b;
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 16px;
+}
+.extra-tools button {
+  background: #7548f5;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 5px 4px 5px 0;
+  cursor: pointer;
+}
+.extra-tools textarea {
+  width: 100%;
+  min-height: 100px;
+  box-sizing: border-box;
+  background: #10101a;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+}
+</style>
+
+<div class="extra-tools">
+  <h2>🎙️ Hindi Voice Preview</h2>
+  <p>Apna dialogue likho aur browser ki available voice se suno.</p>
+  <textarea id="extraDialogue">Ek din ek bahadur ladka apne sapne poore karne nikla.</textarea>
+  <button onclick="previewHindiVoice()">▶ Voice Preview</button>
+  <button onclick="downloadExtraStory()">⬇ Save Dialogue</button>
+  <p id="extraStatus">Voice preview ke liye button dabao.</p>
+</div>
+
+<script>
+function previewHindiVoice() {
+  const text = document.getElementById("extraDialogue").value.trim();
+  const status = document.getElementById("extraStatus");
+
+  if (!text) {
+    status.textContent = "Pehle dialogue likho.";
+    return;
+  }
+
+  if (!("speechSynthesis" in window)) {
+    status.textContent = "Is browser mein voice preview available nahi hai.";
+    return;
+  }
+
+  speechSynthesis.cancel();
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.lang = "hi-IN";
+  speech.rate = 0.9;
+  speechSynthesis.speak(speech);
+  status.textContent = "Voice preview shuru ho raha hai...";
+}
+
+function downloadExtraStory() {
+  const text = document.getElementById("extraDialogue").value;
+  const file = new Blob([text], {type: "text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(file);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "anime-dialogue.txt";
+  a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById("extraStatus").textContent =
+    "Dialogue download karne ki request bhej di gayi.";
+}
+</script>
