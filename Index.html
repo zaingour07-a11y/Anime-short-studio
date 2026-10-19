@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AnimeShorts Studio AI</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#0b0b14;
+  color:white;
+  font-family:Arial,sans-serif;
+  padding:18px;
+}
+header{
+  font-size:25px;
+  font-weight:bold;
+  color:#c4a5ff;
+  margin-bottom:25px;
+}
+.card{
+  background:#191927;
+  padding:18px;
+  border-radius:15px;
+  margin-bottom:18px;
+  border:1px solid #34314b;
+}
+h2{font-size:19px}
+label{display:block;margin:12px 0 6px}
+textarea,input,select{
+  width:100%;
+  padding:12px;
+  border-radius:9px;
+  border:1px solid #49445f;
+  background:#10101a;
+  color:white;
+}
+textarea{min-height:100px}
+button{
+  border:0;
+  border-radius:9px;
+  padding:12px;
+  margin-top:12px;
+  background:linear-gradient(100deg,#8b5cf6,#ec4899);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+.primary{width:100%}
+.scene{
+  background:#242438;
+  padding:14px;
+  border-radius:10px;
+  margin:12px 0;
+}
+.small{color:#bcb8d2;font-size:13px}
+</style>
+</head>
+
+<body>
+
+<header>✨ AnimeShorts Studio AI</header>
+
+<div class="card">
+<h2>🎬 Create Your Anime Story</h2>
+
+<label>Story Idea</label>
+<textarea id="idea" placeholder="Apni anime story likho..."></textarea>
+
+<label>Language</label>
+<select id="language">
+<option>Hindi</option>
+<option>Hinglish</option>
+<option>English</option>
+</select>
+
+<label>Number of Characters</label>
+<select id="characters">
+<option value="2">2 Characters</option>
+<option value="3">3 Characters</option>
+<option value="5">5 Characters</option>
+<option value="8">8 Characters</option>
+</select>
+
+<label>Video Duration</label>
+<select id="duration">
+<option>30 Seconds</option>
+<option>60 Seconds</option>
+<option>3 Minutes</option>
+</select>
+
+<button class="primary" onclick="generateStory()">
+✨ Create Storyboard
+</button>
+</div>
+
+<div class="card">
+<h2>🎭 Storyboard & Dialogues</h2>
+<div id="output" class="small">
+Tumhari story yahan dikhegi.
+</div>
+</div>
+
+<div class="card">
+<h2>🎙️ Character Voice Studio</h2>
+<p class="small">
+Har character ka dialogue yahan edit kar sakte ho.
+Real AI voices ke liye baad mein voice service connect karenge.
+</p>
+<div id="voiceArea"></div>
+</div>
+
+<script>
+function generateStory(){
+ const idea=document.getElementById("idea").value.trim();
+ const count=Number(document.getElementById("characters").value);
+ const lang=document.getElementById("language").value;
+ const output=document.getElementById("output");
+ const voice=document.getElementById("voiceArea");
+
+ if(!idea){
+   alert("Pehle apni story idea likho!");
+   return;
+ }
+
+ const names=["Hero","Friend","Mother","Villain",
+ "Narrator","Teacher","Princess","Old Man"];
+ const lines=[
+ "Humein abhi kuch karna hoga!",
+ "Main tumhare saath hoon.",
+ "Beta, apna khayal rakhna.",
+ "Tum mujhe rok nahi sakte!",
+ "Aur yahin se kahani ne naya mod liya.",
+ "Himmat mat haarna.",
+ "Hum milkar is mushkil ka saamna karenge.",
+ "Asli taqat tumhare iraade mein hai."
+ ];
+
+ let html="<h3>Story Idea</h3><p>"+escapeText(idea)+"</p>";
+ html+="<p>Language: "+lang+"</p>";
+ html+="<h3>Scene 1 — The Beginning</h3>";
+ html+="<p>"+escapeText(idea)+"</p>";
+ html+="<h3>Character Dialogues</h3>";
+
+ let voiceHtml="";
+
+ for(let i=0;i<count;i++){
+   const name=names[i];
+   html+='<div class="scene"><b>'+name+
+   '</b><p>'+lines[i]+'</p></div>';
+
+   voiceHtml+='<div class="scene"><label>Character name</label>'+
+   '<input value="'+name+'" id="name'+i+'">'+
+   '<label>Dialogue</label>'+
+   '<textarea id="dialogue'+i+'">'+lines[i]+'</textarea>'+
+   '<label>Voice style</label><select id="style'+i+'">'+
+   '<option>Natural</option><option>Energetic</option>'+
+   '<option>Calm</option><option>Dramatic</option>'+
+   '<option>Deep</option></select></div>';
+ }
+
+ output.innerHTML=html;
+ voice.innerHTML=voiceHtml;
+}
+
+function escapeText(text){
+ const div=document.createElement("div");
+ div.textContent=text;
+ return div.innerHTML;
+}
+</script>
+
+</body>
+</html>
