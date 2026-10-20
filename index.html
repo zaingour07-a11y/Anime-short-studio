@@ -213,6 +213,7 @@ function escapeText(text){
 </div>
 
 <script>
+  
 function previewHindiVoice() {
   const text = document.getElementById("extraDialogue").value.trim();
   const status = document.getElementById("extraStatus");
@@ -223,38 +224,63 @@ function previewHindiVoice() {
   }
 
   if (!("speechSynthesis" in window)) {
-    status.textContent = "Is browser mein voice preview available nahi hai.";
+    status.textContent = "Is browser mein voice preview supported nahi hai. Chrome mein try karo.";
     return;
   }
 
   const synth = window.speechSynthesis;
-synth.cancel();
+  synth.cancel();
 
-const speech = new SpeechSynthesisUtterance(text);
-speech.lang = "hi-IN";
-speech.rate = 0.85;
-speech.pitch = 1;
+  function tryHindiVoice() {
+    const voices = synth.getVoices();
 
-const voices = synth.getVoices();
-const hindiVoice = voices.find(v =>
-  v.lang.toLowerCase().startsWith("hi")
-);
+    const hindiVoice = voices.find(v =>
+      /^hi([-_]|$)/i.test(v.lang) ||
+      /hindi/i.test(v.name)
+    );
 
-if (hindiVoice) {
-  speech.voice = hindiVoice;
+    if (!hindiVoice) {
+      status.textContent =
+        "Hindi voice nahi mili. Chrome mein try karo aur phone ki Text-to-speech settings check karo.";
+      return;
+    }
+
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.voice = hindiVoice;
+    speech.lang = hindiVoice.lang || "hi-IN";
+    speech.rate = 0.88;
+    speech.pitch = 1;
+
+    speech.onstart = () => {
+      status.textContent = "Hindi voice chal rahi hai...";
+    };
+
+    speech.onend = () => {
+      status.textContent = "Voice preview poora hua.";
+    };
+
+    speech.onerror = () => {
+      status.textContent =
+        "Voice playback fail hua. Chrome, media volume aur Hindi voice settings check karo.";
+    };
+
+    synth.speak(speech);
+  }
+
+  let voices = synth.getVoices();
+
+  if (voices.length > 0) {
+    tryHindiVoice();
+  } else {
+    status.textContent = "Phone ki Hindi voice load ho rahi hai...";
+
+    synth.onvoiceschanged = function () {
+      synth.onvoiceschanged = null;
+      tryHindiVoice();
+    };
+  }
 }
 
-speech.onstart = () => {
-  status.textContent = "Hindi voice chal rahi hai...";
-};
-
-speech.onerror = () => {
-  status.textContent = "Hindi voice nahi chal saki. Phone ki voice settings check karo.";
-};
-
-synth.speak(speech);
-  status.textContent = "Voice preview shuru ho raha hai...";
-}
 
 function downloadExtraStory() {
   const text = document.getElementById("extraDialogue").value;
