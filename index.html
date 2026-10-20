@@ -227,11 +227,32 @@ function previewHindiVoice() {
     return;
   }
 
-  speechSynthesis.cancel();
-  const speech = new SpeechSynthesisUtterance(text);
-  speech.lang = "hi-IN";
-  speech.rate = 0.9;
-  speechSynthesis.speak(speech);
+  const synth = window.speechSynthesis;
+synth.cancel();
+
+const speech = new SpeechSynthesisUtterance(text);
+speech.lang = "hi-IN";
+speech.rate = 0.85;
+speech.pitch = 1;
+
+const voices = synth.getVoices();
+const hindiVoice = voices.find(v =>
+  v.lang.toLowerCase().startsWith("hi")
+);
+
+if (hindiVoice) {
+  speech.voice = hindiVoice;
+}
+
+speech.onstart = () => {
+  status.textContent = "Hindi voice chal rahi hai...";
+};
+
+speech.onerror = () => {
+  status.textContent = "Hindi voice nahi chal saki. Phone ki voice settings check karo.";
+};
+
+synth.speak(speech);
   status.textContent = "Voice preview shuru ho raha hai...";
 }
 
